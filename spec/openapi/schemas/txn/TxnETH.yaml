@@ -1,0 +1,25 @@
+type: object
+properties:
+  amount:
+    type: number
+    format: double
+    example: "0.23"
+  sourceAddress:
+    type: string
+    example: tb1qs8t9l74z0gt4mewmtu56a7dn29ca0sdqkcmy3l
+    description: non-legacy addresses
+  destinationAddress:
+    type: string
+    example: tb1qs8t9l74z0gt4mewmtu56a7dn29ca0sdqkcmy3l
+    description: non-legacy addresses
+  customerId:
+    type: string
+    format: uuid
+    example: "9151f21f-43ae-43b4-92f3-f4af67cdf544"
+  maxGas:
+    type: number
+    format: double
+    example: "0.23"
+  note:
+    type: string
+    example: "tb1qs8t9l74z0gt4mewmtu56a7dn29ca0sdqkcmy3l"

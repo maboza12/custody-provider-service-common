@@ -28,7 +28,7 @@ post:
   - pets
   responses:
     '201':
-        $ref : "../responses/NullResponse.yaml"
+        $ref : "../responses/error/NullResponse.yaml"
     default:
-        $ref : "../responses/UnexpectedError.yaml"
+        $ref : "../responses/error/UnexpectedError.yaml"
 

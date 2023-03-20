@@ -1,0 +1,5 @@
+description: Vault is created
+content:
+  application/json:
+    schema:
+      $ref : "../../schemas/vault/Vault.yaml"

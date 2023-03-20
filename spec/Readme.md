@@ -1,6 +1,11 @@
-# Spec Development
+# Wallet Provider Service
 Using our Spec-First approach we will be developing the spec to generate different pieces of our project (including our models and controllers). These specs follow the OpenAPI 3.0 standards outlined by the OpenAPI initative:
 https://www.openapis.org/
+
+## Functions
+Create Vault Accounts
+Create Wallet Accounts
+Create Transaction
 
 ## Spec Structure
 
@@ -109,3 +114,4 @@ Once it's installed you can run the following gradle command from the root direc
 Checks that the results generated from the spec mocker match up with the application code
 
 - The code must be generated and built to validate this
+

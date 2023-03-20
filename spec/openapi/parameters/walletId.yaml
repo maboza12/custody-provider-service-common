@@ -1,0 +1,9 @@
+name: walletId
+in: query
+description: Wallet ID
+required: false
+schema:
+  type: integer
+  description: Wallet ID
+  format: int32
+  example: 1

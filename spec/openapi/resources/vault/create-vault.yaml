@@ -1,0 +1,20 @@
+post:
+  summary: CreateVault
+  operationId: createVaults
+  description: Create a vault
+  tags:
+  - vault
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: '../../schemas/vault/CreateVault.yaml'
+  responses:
+    '200':
+        $ref : "../../responses/vault/Vault.yaml"
+    '201':
+        $ref : "../../responses/error/NullResponse.yaml"
+    default:
+        $ref : "../../responses/error/UnexpectedError.yaml"
+
+

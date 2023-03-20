@@ -14,4 +14,4 @@ get:
           schema:
             $ref: "../schemas/Pet.yaml"
     default:
-      $ref: "../responses/UnexpectedError.yaml"
+      $ref: "../responses/error/UnexpectedError.yaml"

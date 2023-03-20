@@ -1,0 +1,9 @@
+name: vaultId
+in: query
+description: Vault ID
+required: false
+schema:
+  type: integer
+  description: Vault ID
+  format: int32
+  example: 1
