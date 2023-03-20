@@ -1,0 +1,27 @@
+micronaut:
+  application:
+    name: Boilerplate
+# Add this after getting the data dog API Key add the section below
+# Refer to the documentation https://sherwoodforest.atlassian.net/wiki/spaces/ARC/pages/2782232643/Datadog+Setup
+#  metrics:
+#    enabled: true
+#    tags:
+#      env: local
+#    export:
+#      datadog:
+#        apiKey: ${DATADOG_API_KEY}
+#        enabled: true
+  router:
+    static-resources:
+      public:
+        paths:
+          - classpath:public
+          - classpath:openapi
+        mapping: /**
+        enabled: true
+  server:
+    port: 9080 # Make sure this port is the same specified in the open api spec openapi-v1.0.yaml
+netty:
+  default:
+    allocator:
+      max-order: 3

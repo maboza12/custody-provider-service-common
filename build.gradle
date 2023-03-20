@@ -1,0 +1,197 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
+plugins {
+    //Plugin for Micronaut (https://github.com/micronaut-projects/micronaut-gradle-plugin)
+    id("io.micronaut.application") version "3.6.3"
+
+    //Plugin Uber/Fat Jar (https://github.com/johnrengelman/shadow)
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+
+    //Plugin OpenAPI Generator (https://github.com/OpenAPITools/openapi-generator)
+    id("org.openapi.generator") version "6.2.1"
+
+    //Plugin for Code Linting with Spotless (https://github.com/diffplug/spotless)
+    id "com.diffplug.spotless" version "6.11.0"
+
+    id "io.github.michael-nestler.spectral" version "0.0.0-7"
+
+    //Plugin for Integration Testing (https://github.com/unbroken-dome/gradle-testsets-plugin)
+    id("org.unbroken-dome.test-sets") version "4.0.0"
+
+    //Plugin for Code Coverage, native to Micronaut (https://github.com/jacoco/jacoco)
+    id("jacoco")
+}
+
+def spec = "$rootDir/spec/openapi/openapi-v1.0.yaml".toString()
+def generatedCode = "$buildDir/generated/".toString()
+
+// Installing the Git Hooks into the repository to enforce conventional commit messages
+task installLocalGitHook(type: Copy){
+    from new File(rootProject.rootDir, 'hooks/prepare-commit-msg')
+    into { new File(rootProject.rootDir, '.git/hooks')}
+    fileMode 0775
+
+    from new File(rootProject.rootDir, 'hooks/pre-commit')
+    into { new File(rootProject.rootDir, '.git/hooks')}
+    fileMode 0775
+}
+
+build.dependsOn installLocalGitHook
+
+//Spotless Rules to Enforce Clean Code (https://github.com/diffplug/spotless)
+spotless {
+    format 'misc', {
+        target '*.gradle', '*.md', '.gitignore'
+        trimTrailingWhitespace()
+        indentWithSpaces()
+        endWithNewline()
+    }
+    java {
+        targetExclude('build/**')
+        toggleOffOn()
+        importOrder()
+        removeUnusedImports()
+        googleJavaFormat()
+        formatAnnotations()
+        licenseHeader '/* Bakkt (C) $YEAR */' // or licenseHeaderFile
+    }
+}
+
+spectral {
+    documents.from(spec)
+}
+
+version = "${appVersion}"
+group = "${package_name}"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+
+    //Micronaut managed dependencies
+    implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut.problem:micronaut-problem-json")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut:micronaut-validation")
+    implementation("io.micronaut:micronaut-management")
+
+    //Micronaut non-managed dependencies
+    implementation("jakarta.annotation:jakarta.annotation-api")
+    implementation("io.projectreactor:reactor-core")
+    implementation('net.logstash.logback:logstash-logback-encoder:7.2')
+    //implementation("io.micronaut.micrometer:micronaut-micrometer-registry-datadog")
+
+    runtimeOnly("ch.qos.logback:logback-classic")
+
+    //Testing dependencies
+    testAnnotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+    testImplementation("org.assertj:assertj-core")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testImplementation("org.mock-server:mockserver-junit-jupiter-no-dependencies:5.14.0")
+    testImplementation("io.micronaut.test:micronaut-test-rest-assured")
+}
+
+compileJava.dependsOn tasks.spotlessApply
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("17")
+    targetCompatibility = JavaVersion.toVersion("17")
+}
+
+application {
+
+    mainClass.set("${package_name}.Application")
+
+    sourceSets {
+        main {
+            java {
+                srcDir(generatedCode+"/src/main/java".toString())
+            }
+            resources {
+                srcDir("$rootDir/spec".toString())
+            }
+        }
+        test {
+            java {
+                srcDir(generatedCode+"/src/test/java".toString())
+            }
+        }
+    }
+}
+
+task mockServiceData(type: Exec) {
+    commandLine 'prism', 'mock', '-d', spec
+}
+
+task mockValidateServiceData(type: Exec) {
+    commandLine 'prism', 'proxy', spec, "http://localhost:8080", "--errors"
+}
+
+openApiValidate {
+    inputSpec = spec
+}
+
+//Code Generator for Models and Controllers (https://github.com/OpenAPITools/openapi-generator)
+openApiGenerate {
+    generatorName = "java-micronaut-server"
+    inputSpec = spec
+    outputDir = generatedCode
+    apiPackage = "${package_name}.controller".toString()
+    invokerPackage = "ignored"
+    modelPackage = "${package_name}.model".toString()
+    configOptions = [
+            build: 'gradle',
+            booleanGetterPrefix: 'is',
+            useOptional: 'true',
+            useAuth: 'false',
+            generateControllerAsAbstract: 'true',
+            controllerPackage: 'ignored',
+            generateSwaggerAnnotations: 'false',
+            openApiNullable: 'false',
+            serializationLibrary: 'micronaut_serde_jackson'
+    ]
+}
+
+task cleanApiGenerate(type: Delete, dependsOn: 'openApiGenerate') {
+    delete fileTree(generatedCode) {
+        include '**/ignored/*.java'
+    }
+}
+
+tasks.cleanApiGenerate.dependsOn tasks.openApiValidate
+
+compileJava.dependsOn tasks.cleanApiGenerate
+
+graalvmNative.toolchainDetection = false
+
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("${package_name}.*")
+    }
+}
+
+//Integration tests only runs during the build phase, can be run manually
+testSets {
+    integrationTest
+}
+
+//Code Coverage Report Config (https://github.com/jacoco/jacoco)
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.enabled true
+        csv.enabled true
+    }
+}
+
+test {
+    finalizedBy jacocoTestReport
+}

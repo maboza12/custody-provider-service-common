@@ -1,0 +1,31 @@
+# Starter .pipeline
+# https://aka.ms/yaml
+name: $(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  branches:
+    include:
+      - main
+  tags:
+    include:
+      - v*
+
+resources:
+  repositories:
+    - repository: CICD-SRE #REPO-ALIAS
+      type: github
+      endpoint: Sherwood-forest
+      name: Sherwood-forest/pipelines
+      ref: refs/heads/main
+
+extends:
+  # template can be found at https://github.com/Sherwood-forest/pipelines/blob/main/apps/templates/azure-ci/azure-ci-java-gradle-docker.yml
+  template: /apps/templates/azure-ci/azure-ci-java-gradle-docker.yml@CICD-SRE #/PATH-TO-PIPELINE-IN-REPO@REPO-ALIAS
+  parameters:
+    # View documentation on CheckMarx Setup below
+    # https://sherwoodforest.atlassian.net/wiki/spaces/SEC/pages/2374860865/Static+Application+Security+Testing+SAST+Standard+Checkmarx+IDE+Integration
+    cm_team_name: Marketplace # TODO: Change name to CheckMarx team name
+    cm_project_name: microservice-boilerplate-deployname # TODO: Change name to CheckMarx project name
+    docker_repository: blockchain/microservice-boilerplate-deployname # TODO: Change name to image name, the platform team name is in front of the image
+    azure_subscription: 'bakkt-agp-dev-kv-sc' #TODO: Dependent on the Azure subscription group your team uses
+    key_vault_name: 'bakktdev-.pipeline-kv' #TODO: Dependent on the Azure subscription group your team uses

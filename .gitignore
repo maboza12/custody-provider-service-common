@@ -1,0 +1,7 @@
+/.gradle/
+/.idea/
+/spec/build/
+/spec/.gradle/
+/build/
+.DS_Store
+.git

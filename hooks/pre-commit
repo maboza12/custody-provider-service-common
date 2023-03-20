@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+LC_ALL=C
+
+local_branch="$(git rev-parse --abbrev-ref HEAD)"
+
+valid_branch_regex="^(feature|fix|improvement|technical|release|doc)\/[a-zA-Z]+-[0-9]+-[a-z0-9._-]+$"
+
+if [[ ! $local_branch =~ $valid_branch_regex ]]
+then
+    echo -e "The commit message does not meet the Branch naming convention"
+    echo "The branch name should follow the regex $valid_branch_regex"
+    echo "An example of a valid branch name is: "
+    echo "  feature/BP-1234-fix-typo-documentation or doc/BP-77-updated-readme-instructions"
+
+    echo "More details at: https://sherwoodforest.atlassian.net/wiki/spaces/ARC/pages/2754904407/Git+Strategy"
+    echo "***********************************************************************"
+    exit 1
+fi
+
+exit 0

@@ -1,0 +1,2 @@
+# Referring to default Spectral Rules, different rule sets can be added here
+extends: ["spectral:oas", "spectral:asyncapi"]

@@ -1,0 +1,22 @@
+openapi: "3.0.3"
+info:
+  version: 1.0.0
+  title: Boilerplate
+  description: Multi-file boilerplate for OpenAPI Specification.
+  license:
+    name: MIT
+  contact:
+    name: Platform Support
+    url: http://www.platform.bakkt.com/support
+    email: platform@bakkt.com
+servers:
+  - url: http://localhost:9080/ # Make sure this port matches up with what's in the application.yaml file
+tags:
+  - name: pets
+
+paths:
+  /pets/:
+    $ref: "resources/pets.yaml"
+
+  /pets/{petId}/:
+    $ref: "resources/pet.yaml"

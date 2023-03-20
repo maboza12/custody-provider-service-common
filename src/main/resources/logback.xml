@@ -1,0 +1,21 @@
+<!-- Refer to Logging Documentation https://sherwoodforest.atlassian.net/wiki/spaces/ARC/pages/2783248419/Logging-->
+<configuration>
+
+    <appender name="jsonOut" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <!--      <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>-->
+        </encoder>
+    </appender>
+
+    <!--  <property name="defaultPattern"-->
+    <!--    value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%mdc] %-5level %logger{36} - %msg%n"/>-->
+    <!--  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">-->
+    <!--    <encoder>-->
+    <!--      <Pattern>${defaultPattern}</Pattern>-->
+    <!--    </encoder>-->
+    <!--  </appender>-->
+
+    <root level="info">
+        <appender-ref ref="jsonOut"/>
+    </root>
+</configuration>

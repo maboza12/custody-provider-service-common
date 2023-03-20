@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+# @author : Mak Sophea
+# @version : 1.0#
+# Create a regex for a conventional commit.
+commit_types="(init|fix|feat|doc|infra|test|debt|BREAKING CHANGE|wip)"
+convetional_commit_regex="^${commit_types}(\([a-z \-]+\))?!?: .+$"
+
+# Get the commit message (the parameter we're given is just the path to the
+# temporary file which holds the message).
+commit_message=$(cat "$1")
+
+# Check the message, if we match, all good baby.
+if [[ "$commit_message" =~ $convetional_commit_regex ]]; then
+   echo -e "Commit message meets Conventional Commit standards..."
+   exit 0
+fi
+
+# Uh-oh, this is not a conventional commit, show an example and link to the spec.
+echo -e "The commit message does not meet the Conventional Commit standard"
+echo "An example of a valid message is: "
+echo "  feat(login): add the 'remember me' button"
+echo "More details at: https://sherwoodforest.atlassian.net/wiki/spaces/ARC/pages/2741567563/Commits"
+echo "***********************************************************************"
+echo "Here are the  list of message type : ${commit_types}"
+
+exit 1
