@@ -1,9 +1,5 @@
 type: object
 properties:
-  walletId:
-    type: integer
-    format: int64
-    example: 11
   asset:
     type: string
     example: BTC
@@ -13,14 +9,3 @@ properties:
   legacyAddress:
     type: string
     example: msMUGq8Le1C1YCjn7ocC4MkembTz8gKgVh
-  vaultName:
-    type: string
-    example: GalaxyVault
-  vaultId:
-    type: integer
-    format: int64
-    example: 11
-  customerId:
-    type: string
-    format: uuid
-    example: "9151f21f-43ae-43b4-92f3-f4af67cdf544"

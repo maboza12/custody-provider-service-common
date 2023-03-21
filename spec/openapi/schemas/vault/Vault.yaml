@@ -6,12 +6,3 @@ properties:
   name:
     type: string
     example: test1
-  customerId:
-    type: string
-    example: "9151f21f-43ae-43b4-92f3-f4af67cdf544"
-    format: uuid
-  assets:
-    type: array
-    items:
-      type: string
-      format: nullable
